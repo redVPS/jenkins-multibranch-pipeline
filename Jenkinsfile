@@ -1,6 +1,6 @@
 pipeline {
     environment {
-        repository = 'thenaim/nodejs-app'
+        repository = 'thenaim/jenkins-nodejs-app'
         registry = 'https://registry.hub.docker.com'
         registryCredential = 'dockerhub'
     }
