@@ -52,6 +52,7 @@ Two way you can install jenkins server, either use docker container or direct in
 
   ```bash
   curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+  sudo apt install nodejs
   ```
 
   
