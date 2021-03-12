@@ -29,11 +29,10 @@ Two way you can install jenkins server, either use docker container or direct in
   sudo apt-get install jenkins
   ```
 
-  Jenkins user sudo permission
+  Jenkins root permission
 
   ```bash
   sudo usermod -a -G root jenkins
-  jenkins ALL=(ALL) NOPASSWD: ALL
   ```
 
   
@@ -44,10 +43,10 @@ Two way you can install jenkins server, either use docker container or direct in
 
   ```bash
   sudo sh -c "$(curl -fsSL https://get.docker.com)"
-  sudo groupadd docker
-  sudo usermod -aG docker naim
+  sudo usermod -aG docker jenkins
   newgrp docker
   ```
+  Note: Sometimes reboot required
 
 - NPM
 
