@@ -1,85 +1,74 @@
 pipeline {
     environment {
         repository = 'thenaim/jenkins-nodejs-app'
-        registry = 'https://registry.hub.docker.com'
-        registryCredential = 'dockerhub'
+        registryUrl = 'https://registry.hub.docker.com'
+        registryCredentialsId = 'dockerhub'
     }
     agent any
     options {
-        // Skip default SCM checkout before clean up
-        skipDefaultCheckout()
+        skipDefaultCheckout()   // Skip default SCM checkout
     }
     stages {
-        stage('Build') {
+        stage('Checkout SCM') {
             steps {
-                // Clean before build
-                cleanWs()
-                // Checkout from SCM before build
-                checkout scm
+                script{
+                    cleanWs()       // Clean before build
+                    checkout scm    // Checkout from SCM before build
+                }
+            }    
+        }
+        stage("Build Application") {
+            steps {
                 script {
                     if (isMain()) {
-                        // Build the Docker image with latest tag
-                        dockerImage = docker.build "$repository:latest"
-                    } else {
-                        // Build the Docker image with BUILD_NUMBER tag
-                        dockerImage = docker.build "$repository:$BUILD_NUMBER"
+                        build_latest()
+                    } 
+                    else {
+                        build_number()
                     }
                 }
-            }
+			}
         }
-        stage('Test') {
+        stage('Test Application') {
             steps {
                 script {
-                    // Run the tests inside container
-                    // sh "docker run --rm $repository:$BUILD_NUMBER npm test"
+                    // sh "docker run --rm $repository:$BUILD_NUMBER npm test"                      // Run the tests inside container
                     dockerImage.inside {
-                        // Extract the WORKDIR environment variable from container
-                        def WORKDIR = sh(script: 'echo \$WORKDIR', returnStdout: true).trim()
-
-                        // Copying the app into workspace
-                        sh "cp -r '$WORKDIR' '$WORKSPACE'"
-
-                        // Run the tests inside the new directory
+                        def WORKDIR = sh(script: 'echo \$WORKDIR', returnStdout: true).trim()       // Extract the WORKDIR environment variable from container
+                        sh "cp -r '$WORKDIR' '$WORKSPACE'"                                          // Copying the app into workspace
                         dir("$WORKSPACE$WORKDIR") {
-                            sh 'npm test'
+                            sh 'npm test'                                                           // Run the tests inside the new directory
                         }
-                    // sh "rm -rf $WORKSPACE$WORKDIR"
                     }
                 }
             }
         }
-        stage('Deploy') {
-            // Deploy if breach is main
-            when { branch 'main' }
+        stage('Publish Artifacts') {
+            when { 
+                branch 'main'
+            }
             steps {
-                script {
-                    docker.withRegistry("$registry", "$registryCredential") {
-                        dockerImage.push()
-                    }
-                }
-                echo 'Deployed!!!'
-                // sh './bash/deploy.sh'
+                publish()
+                echo 'Published!!!'
             }
         }
-        stage('CleanUp') {
-            steps {
-                script {
-                    // Removing the docker image
+        stage('Clean Up') {
+			steps {
+				script {
                     if (isMain()) {
                         sh "docker rmi $repository:latest"
-                    } else {
+                    } 
+                    else {
                         sh "docker rmi $repository:$BUILD_NUMBER"
                     }
                 }
-            }
+			}
         }
     }
     post {
-        // Triggere when blue or green sign
         success {
             echo 'Build was successful!! Notify team!'
         }
-        // Triggere when red sign
         failure {
             echo 'Build is broken!! Notify team!'
         }
@@ -88,4 +77,18 @@ pipeline {
 
 def isMain() {
     "${BRANCH_NAME}" == 'main'
+}
+
+def build_number() {
+    dockerImage = docker.build "$repository:$BUILD_NUMBER"
+}
+
+def build_latest() {
+    dockerImage = docker.build "$repository:latest"
+}
+
+def publish() {
+    docker.withRegistry("$registryUrl", "$registryCredentialsId") {
+        dockerImage.push()
+    }
 }
