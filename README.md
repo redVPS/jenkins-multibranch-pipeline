@@ -3,12 +3,7 @@
 A quick Jenkins project for setting up a declarative multibranch CI/CD pipeline.
 
 
-
-## Quickstart
-
-
-
-### Installing Jenkins
+### Install Jenkins
 
 Two way you can install jenkins server, either use docker container or direct installation on OS.
 
