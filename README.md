@@ -1,6 +1,6 @@
 
 
-A quick Jenkins guide for setting up declarative CI/CD pipeline with docker and nodejs.
+A quick Jenkins project for setting up a declarative multibranch CI/CD pipeline.
 
 
 
@@ -37,7 +37,7 @@ Two way you can install jenkins server, either use docker container or direct in
 
   
 
-### Install services
+### Install services on Jenkins controller
 
 - Docker
 
