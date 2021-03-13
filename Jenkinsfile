@@ -18,11 +18,9 @@ pipeline {
                 checkout scm
                 script {
                     if (isMain()) {
-                        // Build the Docker image with latest tag
-                        dockerImage = docker.build "$repository:latest"
+                        build_latest()
                     } else {
-                        // Build the Docker image with BUILD_NUMBER tag
-                        dockerImage = docker.build "$repository:$BUILD_NUMBER"
+                        build_number()
                     }
                 }
             }
@@ -88,4 +86,14 @@ pipeline {
 
 def isMain() {
     "${BRANCH_NAME}" == 'main'
+}
+
+def build_number() {
+    // Build the Docker image with BUILD_NUMBER tag
+    dockerImage = docker.build "$repository:$BUILD_NUMBER"
+}
+
+def build_latest() {
+    // Build the Docker image with latest tag
+    dockerImage = docker.build "$repository:latest"
 }
