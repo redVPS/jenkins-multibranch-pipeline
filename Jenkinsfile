@@ -52,7 +52,7 @@ pipeline {
                 echo 'Published!!!'
             }
         }
-        stage('CleanUp') {
+        stage('Clean Up') {
 			steps {
 				script {
                     if (isMain()) {
