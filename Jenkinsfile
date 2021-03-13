@@ -17,17 +17,15 @@ pipeline {
                 }
             }    
         }
-        stage('Build Application') {
-            when { not { branch 'main' }}
-			steps {
-                script {
-				    build_number()
-                }
-			}
-            when { branch 'main' }
+        stage("Build Application") {
             steps {
                 script {
-				    build_latest()
+                    if (isMain()) {
+                        build_latest()
+                    } 
+                    else {
+                        build_number()
+                    }
                 }
 			}
         }
@@ -46,20 +44,24 @@ pipeline {
             }
         }
         stage('Publish Artifacts') {
-            when { branch 'main' }
+            when { 
+                branch 'main'
+            }
             steps {
                 publish()
                 echo 'Published!!!'
             }
         }
         stage('CleanUp') {
-            when { not { branch 'main' }}
 			steps {
-				sh "docker rmi $repository:$BUILD_NUMBER"
-			}
-            when { branch 'main' }
-            steps {
-				sh "docker rmi $repository:latest"
+				script {
+                    if (isMain()) {
+                        sh "docker rmi $repository:latest"
+                    } 
+                    else {
+                        sh "docker rmi $repository:$BUILD_NUMBER"
+                    }
+                }
 			}
         }
     }
@@ -71,6 +73,10 @@ pipeline {
             echo 'Build is broken!! Notify team!'
         }
     }
+}
+
+def isMain() {
+    "${BRANCH_NAME}" == 'main'
 }
 
 def build_number() {
