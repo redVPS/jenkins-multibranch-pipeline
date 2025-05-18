@@ -65,6 +65,7 @@ pipeline {
 			}
         }
     }
+	
     post {
         success {
             echo 'Build was successful!! Notify team!'
