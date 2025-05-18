@@ -43,15 +43,15 @@ pipeline {
                 }
             }
         }
-        stage('Publish Artifacts') {
-            when { 
-                branch 'multi'
-            }
-            steps {
-                publish()
-                echo 'Published!!!'
-            }
-        }
+        // stage('Publish Artifacts') {
+        //     when { 
+        //         branch 'multi'
+        //     }
+        //     steps {
+        //         publish()
+        //         echo 'Published!!!'
+        //     }
+        // }
         stage('Clean Up') {
 			steps {
 				script {
@@ -87,8 +87,8 @@ def build_latest() {
     dockerImage = docker.build "$repository:latest"
 }
 
-def publish() {
-    docker.withRegistry("$registryUrl", "$registryCredentialsId") {
-        dockerImage.push()
-    }
-}
+// def publish() {
+//     docker.withRegistry("$registryUrl", "$registryCredentialsId") {
+//         dockerImage.push()
+//     }
+// }
