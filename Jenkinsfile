@@ -45,7 +45,7 @@ pipeline {
         }
         stage('Publish Artifacts') {
             when { 
-                branch 'main'
+                branch 'multi'
             }
             steps {
                 publish()
@@ -76,7 +76,7 @@ pipeline {
 }
 
 def isMain() {
-    "${BRANCH_NAME}" == 'main'
+    "${BRANCH_NAME}" == 'multi'
 }
 
 def build_number() {
