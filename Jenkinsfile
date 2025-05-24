@@ -88,8 +88,8 @@ def build_latest() {
     dockerImage = docker.build "$repository:latest"
 }
 
-def publish() {
-    docker.withRegistry("$registryUrl", "$registryCredentialsId") {
-        dockerImage.push()
-    }
-}
+// def publish() {
+//     docker.withRegistry("$registryUrl", "$registryCredentialsId") {
+//         dockerImage.push()
+//     }
+// }
